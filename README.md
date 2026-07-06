@@ -36,9 +36,15 @@ machine-readable API URL).
 
 ## Install
 
+Not yet on PyPI - install from source until the first release ships:
+
 ```bash
-uvx jp-eli-mcp
+git clone https://github.com/matematicsolutions/jp-eli-mcp
+cd jp-eli-mcp
+pip install -e .
 ```
+
+Once released, this will be `uvx jp-eli-mcp`.
 
 Configuration via env:
 
@@ -48,19 +54,12 @@ Configuration via env:
 
 No API key. e-Gov's law search API is keyless.
 
-### From source
-
-```bash
-cd jp-eli-mcp
-pip install -e .
-```
-
 ### Configure (Claude Code / any MCP client)
 
 ```json
 {
   "mcpServers": {
-    "jp-eli-mcp": { "command": "uvx", "args": ["jp-eli-mcp"] }
+    "jp-eli-mcp": { "command": "jp-eli-mcp" }
   }
 }
 ```

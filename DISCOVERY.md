@@ -65,5 +65,7 @@ attributes throughout (e.g. `Part Num="1"`).
 
 ## Decision: BUILD
 
-Keyless, modern JSON REST, a genuine full-text search endpoint, and a large market (~44,000
-bengoshi, third-largest economy) make this the highest-ROI non-EU connector evaluated so far.
+Keyless, modern JSON REST, a genuine full-text search endpoint, and Japan's size as a legal
+market make this the highest-ROI non-EU connector evaluated so far. Market-size figures
+(bengoshi headcount, GDP rank) were not independently re-verified in this session and are
+left out of this document rather than repeated unsourced.

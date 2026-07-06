@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "jp-eli-mcp": {
+      "command": "jp-eli-mcp",
+      "env": {
+        "JP_ELI_BASE_URL": "https://laws.e-gov.go.jp/api/2",
+        "JP_ELI_CACHE_DIR": "~/.matematic/cache/jp-eli",
+        "JP_ELI_AUDIT_DIR": "~/.matematic/audit"
+      }
+    }
+  }
+}

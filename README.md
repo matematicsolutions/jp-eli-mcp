@@ -64,6 +64,25 @@ No API key. e-Gov's law search API is keyless.
 }
 ```
 
+### Windows 11 ze Smart App Control
+
+Smart App Control blokuje niepodpisane pliki wykonywalne, a `uvx.exe`, `pip.exe`
+i generowany przy instalacji `jp-eli-mcp.exe` podpisane nie sa. `python.exe`
+z python.org jest podpisany przez Python Software Foundation, wiec uruchomienie
+przez modul omija blokade:
+
+```bash
+python -m pip install jp-eli-mcp
+python -m jp_eli_mcp
+```
+
+```json
+{ "mcpServers": { "jp-eli-mcp": { "command": "python", "args": ["-m", "jp_eli_mcp"] } } }
+```
+
+Nie wylaczaj Smart App Control, zeby to obejsc - wylaczenia nie da sie cofnac
+bez ponownej instalacji systemu.
+
 ## Governance
 
 - **Public data only** - read-only against e-Gov; no client data leaves the machine.

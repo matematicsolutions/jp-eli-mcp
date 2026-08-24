@@ -51,6 +51,7 @@ This MCP server exposes Japan's official e-Gov law search API (laws.e-gov.go.jp)
 
 ## Hard constraints
 
+- **Do not answer past the edge of this corpus** - when a search comes back empty, or the question touches material this connector does not carry, call `jp_coverage` and relay what it says is missing. Absence here is not absence in the law.
 - **No native ELI** - Japan has not deployed ELI. `eli_uri` is the e-Gov viewer URL (`https://laws.e-gov.go.jp/law/{law_id}`), never invented; see `eli_note`.
 - **Every response has `human_readable_citation` + `source_url`** - cite both to the user.
 - **No modification of official text** - returned verbatim from e-Gov.

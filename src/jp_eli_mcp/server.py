@@ -33,6 +33,7 @@ from .models import (
     LawSummary,
     LawText,
 )
+from .coverage import Coverage, build_coverage
 
 _MAX_FULL_TEXT_CHARS = 300_000
 _TAG_RE = re.compile(r"</?span[^>]*>")
@@ -299,6 +300,20 @@ async def jp_get_article(law_id: str, article_num: str) -> ArticleText:
 
 # ---------------------------------------------------------------------------
 # jp_get_full_text
+@mcp.tool(annotations=READ_ONLY)
+async def jp_coverage() -> Coverage:
+    """Declare what this connector covers, how it is sourced, and what it does NOT cover.
+
+    Call this before telling a user that the law "does not contain" something, and whenever
+    a search comes back empty: the absence may be a gap in this connector rather than in the
+    law. Every gap carries a fallback saying where to look instead.
+
+    Returns:
+        ``Coverage`` with families, an as-of note, and a non-empty list of known gaps.
+    """
+    return build_coverage()
+
+
 # ---------------------------------------------------------------------------
 
 

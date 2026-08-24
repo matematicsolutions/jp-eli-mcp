@@ -28,6 +28,7 @@ adapted for a jurisdiction with no ELI scheme.
 | `jp_get_law` | Metadata for a law by `law_id`: title, law number, promulgation date. |
 | `jp_get_article` | The text of one article of a law, by `law_id` and `article_num`. |
 | `jp_get_full_text` | The full text of a law (truncated at ~300,000 characters). |
+| `jp_coverage` | Declare what this connector covers, when each family was captured, and - explicitly - what it does NOT cover. Every gap carries a fallback. |
 
 Every response carries the contract: `eli_uri` (Japan has no ELI - this is the durable e-Gov
 viewer URL, e.g. `https://laws.e-gov.go.jp/law/129AC0000000089`, see `eli_note`),

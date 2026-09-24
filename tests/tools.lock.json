@@ -1,0 +1,825 @@
+{
+  "package_version": "0.3.3",
+  "tools": {
+    "jp_coverage": {
+      "descriptor": {
+        "annotations": {
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Declare what this connector covers, how it is sourced, and what it does NOT cover.\n\nCall this before telling a user that the law \"does not contain\" something, and whenever\na search comes back empty: the absence may be a gap in this connector rather than in the\nlaw. Every gap carries a fallback saying where to look instead.\n\nReturns:\n    ``Coverage`` with families, an as-of note, and a non-empty list of known gaps.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {},
+          "type": "object"
+        },
+        "meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "name": "jp_coverage",
+        "outputSchema": {
+          "additionalProperties": true,
+          "description": "What this connector covers, how it is sourced, and what it does not cover.",
+          "properties": {
+            "as_of_note": {
+              "description": "States what the dates mean, and what they do not promise.",
+              "type": "string"
+            },
+            "families": {
+              "items": {
+                "additionalProperties": true,
+                "description": "One data family this connector exposes.",
+                "properties": {
+                  "captured_at": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Date this family was last captured (ISO). None when queried live."
+                  },
+                  "live": {
+                    "default": true,
+                    "description": "True when queried live instead of from a snapshot.",
+                    "type": "boolean"
+                  },
+                  "name": {
+                    "description": "Data family, e.g. 'Federal legislation'.",
+                    "type": "string"
+                  },
+                  "source": {
+                    "description": "Official source the data comes from.",
+                    "type": "string"
+                  },
+                  "tool": {
+                    "description": "Tool or tools that reach this family.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "tool",
+                  "source"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "known_gaps": {
+              "description": "Never empty. An empty list would mean 'not checked', not 'no gaps'.",
+              "items": {
+                "additionalProperties": true,
+                "description": "A known, named hole in this connector's coverage - plus the way around it.",
+                "properties": {
+                  "fallback": {
+                    "description": "Where to go instead.",
+                    "type": "string"
+                  },
+                  "family": {
+                    "description": "Which family the gap belongs to.",
+                    "type": "string"
+                  },
+                  "id": {
+                    "description": "Stable gap identifier.",
+                    "type": "string"
+                  },
+                  "missing": {
+                    "description": "What is NOT available through this connector.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "family",
+                  "missing",
+                  "fallback"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "status": {
+              "default": "ok",
+              "enum": [
+                "ok",
+                "degraded",
+                "failed"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "as_of_note"
+          ],
+          "type": "object"
+        }
+      },
+      "sha256": "b46e3fe04e7e5be032e91c61f794a7dd35679c5c00cd9824143ea1bf41b6a88d"
+    },
+    "jp_get_article": {
+      "descriptor": {
+        "annotations": {
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Fetch the text of one article of a law.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "article_num": {
+              "description": "the e-Gov ``Num`` attribute, e.g. ``\"1\"`` for Article 1, ``\"3_2\"`` for\na branch article (第三条の二).",
+              "type": "string"
+            },
+            "law_id": {
+              "description": "e.g. ``\"129AC0000000089\"`` (the Civil Code).",
+              "type": "string"
+            }
+          },
+          "required": [
+            "law_id",
+            "article_num"
+          ],
+          "type": "object"
+        },
+        "meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "name": "jp_get_article",
+        "outputSchema": {
+          "additionalProperties": true,
+          "description": "Result of ``jp_get_article`` - the text of one article of a law.",
+          "properties": {
+            "article_num": {
+              "type": "string"
+            },
+            "caption": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "dataset_note": {
+              "default": "e-Gov (laws.e-gov.go.jp) is Japan's official portal for national legislation, run by the Digital Agency. Japan has no ELI scheme; eli_uri carries the durable e-Gov viewer URL keyed on law_id (see eli_note). Discover by law_title (jp_search_laws) or full-text keyword (jp_search_by_keyword), then fetch metadata or a specific article by law_id.",
+              "type": "string"
+            },
+            "eli_note": {
+              "default": "Japan has not deployed ELI. eli_uri is the durable e-Gov viewer URL (https://laws.e-gov.go.jp/law/{law_id}), keyed on the stable law_id e-Gov assigns to every law - never invented.",
+              "type": "string"
+            },
+            "eli_uri": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "human_readable_citation": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "law_id": {
+              "type": "string"
+            },
+            "source_url": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "text": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "required": [
+            "law_id",
+            "article_num"
+          ],
+          "type": "object"
+        }
+      },
+      "sha256": "ff38b9090ec4ed155905acb85dbbde6e906e6b8e26c534e0e817f6cd65c6e65c"
+    },
+    "jp_get_full_text": {
+      "descriptor": {
+        "annotations": {
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Fetch the full text of a law by ``law_id``. Large laws are truncated.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "law_id": {
+              "description": "e.g. ``\"129AC0000000089\"`` (the Civil Code).",
+              "type": "string"
+            }
+          },
+          "required": [
+            "law_id"
+          ],
+          "type": "object"
+        },
+        "meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "name": "jp_get_full_text",
+        "outputSchema": {
+          "additionalProperties": true,
+          "description": "Result of ``jp_get_full_text`` - the full text of a law, possibly truncated.",
+          "properties": {
+            "byte_size": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "content": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "dataset_note": {
+              "default": "e-Gov (laws.e-gov.go.jp) is Japan's official portal for national legislation, run by the Digital Agency. Japan has no ELI scheme; eli_uri carries the durable e-Gov viewer URL keyed on law_id (see eli_note). Discover by law_title (jp_search_laws) or full-text keyword (jp_search_by_keyword), then fetch metadata or a specific article by law_id.",
+              "type": "string"
+            },
+            "eli_note": {
+              "default": "Japan has not deployed ELI. eli_uri is the durable e-Gov viewer URL (https://laws.e-gov.go.jp/law/{law_id}), keyed on the stable law_id e-Gov assigns to every law - never invented.",
+              "type": "string"
+            },
+            "eli_uri": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "human_readable_citation": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "law_id": {
+              "type": "string"
+            },
+            "source_url": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "truncated": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "law_id"
+          ],
+          "type": "object"
+        }
+      },
+      "sha256": "8f5077f94834bdfe1f761e0af169ef9c51f80458692ce9c86c74fc00ca12c236"
+    },
+    "jp_get_law": {
+      "descriptor": {
+        "annotations": {
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Fetch metadata for a law by its e-Gov ``law_id`` (no body text).",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "law_id": {
+              "description": "e.g. ``\"129AC0000000089\"`` (the Civil Code).",
+              "type": "string"
+            }
+          },
+          "required": [
+            "law_id"
+          ],
+          "type": "object"
+        },
+        "meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "name": "jp_get_law",
+        "outputSchema": {
+          "additionalProperties": true,
+          "description": "Result of ``jp_get_law`` - metadata only, no body text.",
+          "properties": {
+            "amendment_enforcement_date": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "amendment_law_id": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "dataset_note": {
+              "default": "e-Gov (laws.e-gov.go.jp) is Japan's official portal for national legislation, run by the Digital Agency. Japan has no ELI scheme; eli_uri carries the durable e-Gov viewer URL keyed on law_id (see eli_note). Discover by law_title (jp_search_laws) or full-text keyword (jp_search_by_keyword), then fetch metadata or a specific article by law_id.",
+              "type": "string"
+            },
+            "eli_note": {
+              "default": "Japan has not deployed ELI. eli_uri is the durable e-Gov viewer URL (https://laws.e-gov.go.jp/law/{law_id}), keyed on the stable law_id e-Gov assigns to every law - never invented.",
+              "type": "string"
+            },
+            "eli_uri": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "human_readable_citation": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "law_id": {
+              "type": "string"
+            },
+            "law_num": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "law_title": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "law_type": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "promulgation_date": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "source_url": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "required": [
+            "law_id"
+          ],
+          "type": "object"
+        }
+      },
+      "sha256": "5ab461173598f80697ff2d6e22272c823107ce31fe90dfb406582e1d3b2d798b"
+    },
+    "jp_search_by_keyword": {
+      "descriptor": {
+        "annotations": {
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Full-text search across all Japanese laws for a keyword.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "keyword": {
+              "description": "e.g. ``\"個人情報\"`` (personal information).",
+              "type": "string"
+            },
+            "limit": {
+              "default": 10,
+              "description": "max results, 1-100 (default 10).",
+              "type": "integer"
+            },
+            "offset": {
+              "default": 0,
+              "description": "pagination offset (default 0).",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "keyword"
+          ],
+          "type": "object"
+        },
+        "meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "name": "jp_search_by_keyword",
+        "outputSchema": {
+          "additionalProperties": true,
+          "description": "Result of ``jp_search_by_keyword``.",
+          "properties": {
+            "dataset_note": {
+              "default": "e-Gov (laws.e-gov.go.jp) is Japan's official portal for national legislation, run by the Digital Agency. Japan has no ELI scheme; eli_uri carries the durable e-Gov viewer URL keyed on law_id (see eli_note). Discover by law_title (jp_search_laws) or full-text keyword (jp_search_by_keyword), then fetch metadata or a specific article by law_id.",
+              "type": "string"
+            },
+            "items": {
+              "items": {
+                "additionalProperties": true,
+                "description": "One hit of ``jp_search_by_keyword`` - a law with matching text snippets.",
+                "properties": {
+                  "eli_note": {
+                    "default": "Japan has not deployed ELI. eli_uri is the durable e-Gov viewer URL (https://laws.e-gov.go.jp/law/{law_id}), keyed on the stable law_id e-Gov assigns to every law - never invented.",
+                    "type": "string"
+                  },
+                  "eli_uri": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "human_readable_citation": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "law_id": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "law_num": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "law_title": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "snippets": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "source_url": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "keyword": {
+              "type": "string"
+            },
+            "next_offset": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "total_count": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "keyword",
+            "total_count"
+          ],
+          "type": "object"
+        }
+      },
+      "sha256": "fe89d1ff1d9abc9cbb45bc9faf28f572cf578b2a22d9b864a1102a12c9272743"
+    },
+    "jp_search_laws": {
+      "descriptor": {
+        "annotations": {
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Search Japanese laws by (partial) title.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "law_title": {
+              "description": "e.g. ``\"民法\"`` (Civil Code) or ``\"個人情報の保護に関する法律\"``.",
+              "type": "string"
+            },
+            "limit": {
+              "default": 10,
+              "description": "max results, 1-100 (default 10).",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "law_title"
+          ],
+          "type": "object"
+        },
+        "meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "name": "jp_search_laws",
+        "outputSchema": {
+          "additionalProperties": true,
+          "description": "Result of ``jp_search_laws``.",
+          "properties": {
+            "dataset_note": {
+              "default": "e-Gov (laws.e-gov.go.jp) is Japan's official portal for national legislation, run by the Digital Agency. Japan has no ELI scheme; eli_uri carries the durable e-Gov viewer URL keyed on law_id (see eli_note). Discover by law_title (jp_search_laws) or full-text keyword (jp_search_by_keyword), then fetch metadata or a specific article by law_id.",
+              "type": "string"
+            },
+            "items": {
+              "items": {
+                "additionalProperties": true,
+                "description": "One law as returned by search (title or keyword).",
+                "properties": {
+                  "eli_note": {
+                    "default": "Japan has not deployed ELI. eli_uri is the durable e-Gov viewer URL (https://laws.e-gov.go.jp/law/{law_id}), keyed on the stable law_id e-Gov assigns to every law - never invented.",
+                    "type": "string"
+                  },
+                  "eli_uri": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "human_readable_citation": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "law_id": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "law_num": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "law_title": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "law_type": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "promulgation_date": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "source_url": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "query": {
+              "type": "string"
+            },
+            "total_count": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "query",
+            "total_count"
+          ],
+          "type": "object"
+        }
+      },
+      "sha256": "fec8b737ff0dd67a41c91d3fe774dc507d9ed7fad610e1a16a87ff9e78384f52"
+    }
+  },
+  "toolset_sha256": "38ad6133ab9cf4da921cec1abd1e0a42d650a4d581ca43089abc976c2ee0c60c"
+}
